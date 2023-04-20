@@ -4,8 +4,8 @@ from socket import *
 
 print("=====================TCP客户端=====================");
 
-HOST = '192.168.2.24'  #服务器ip地址，等价于localhost
-PORT = 21567  #通信端口号
+HOST = '172.23.224.1'  #服务器ip地址，等价于localhost
+PORT = 12000  #通信端口号
 BUFSIZ = 1024  #接收数据缓冲大小
 ADDR = (HOST, PORT)
 

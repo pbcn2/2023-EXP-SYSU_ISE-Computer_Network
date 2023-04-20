@@ -1,6 +1,6 @@
 from socket import *
 
-HOST = '192.168.2.24'  # 服务器连接地址
+HOST = '172.28.20.78'  # 服务器连接地址
 PORT = 8080  # 服务器启用端口
 BUFSIZ = 1024  # 缓冲区大小
 ADDR = (HOST, PORT)
