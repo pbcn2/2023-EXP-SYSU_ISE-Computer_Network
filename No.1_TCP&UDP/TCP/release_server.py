@@ -19,7 +19,7 @@
 
 # serverSocket.close()
 
-
+# -*- coding: utf-8 -*-
 from socket import *
 
 # 定义服务器地址和端口
