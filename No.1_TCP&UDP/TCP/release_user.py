@@ -1,9 +1,22 @@
+# -*- coding: utf-8 -*-
 
 import socket
 
-# 定义服务器地址和端口
-serverHost = '172.28.20.78'
+# 获取本机的主机名
+hostname = socket.gethostname()
+
+# 获取本机的 IP 地址
+ip_address = socket.gethostbyname(hostname)
+
+# 打印本机的 IP 地址
+print("My IP address is:", ip_address)
+
+# 将本机的 IP 地址作为服务器的地址
+serverHost = ip_address
 serverPort = 8080
+
+# 定义服务器地址和端口
+# serverHost = '172.28.20.78'
 
 # 创建客户端 socket
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

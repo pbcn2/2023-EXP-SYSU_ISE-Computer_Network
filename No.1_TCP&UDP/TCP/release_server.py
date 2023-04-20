@@ -24,6 +24,7 @@ from socket import *
 
 # 定义服务器地址和端口
 serverHost = ''
+# serverHost = '192.168.1.666'
 serverPort = 8080
 
 # 准备服务器端 socket
