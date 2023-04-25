@@ -1,9 +1,12 @@
 # 网络抓包与协议分析
-## 实验1.1 Wireshark软件使用与ARP协议分析
-***
-**指令集：显示过滤器语法**
 
-显示arp协议报文
+***
+
+## **Commend**:
+
+### 显示过滤器指令
+
+显示arp协议报文（TCP/UDP/ICMP 同理）
 ```
 arp    
 ```
@@ -11,7 +14,20 @@ arp
 ```
 ip.src == a.b.c.d && icmp
 ```
+
+### 终端指令
+```
+arp -d  删除所有的ip地址项
+    -s InetAddr EtherADDR [IfaceAddr]
+    在ARP缓存中添加对应InetAddr地址的EtherAddr地址静态项
+```
+
 ***
+
+<br>
+
+## 实验1.1 Wireshark软件使用与ARP协议分析
+
 ### 实验1.1.1 观察MAC地址
 在显示捕捉器中中输入`ip.src == a.b.c.d && icmp`（将a.b.c.d）替换成目标服务器的IP地址，仅仅捕捉目标服务器的ping数据包
 
@@ -38,3 +54,5 @@ a.b.c.d is at xxx:xxx(MAC)
 ```
 展开以太网Ⅱ发现MAC位置已经用MAC地址替代了fff
 
+<br><br>
+## 实验1.2 IP与ICMP分析
