@@ -11,46 +11,34 @@ udpCliendSocket = socket(AF_INET, SOCK_DGRAM)
 
 # 一个计数变量
 count = 0
-time_start = ''
-time_end = 0
-ADDA = 0
+time_start = '' # 第一个包的送达时间
+time_end = 0  # 最后一个包的送达时间
+ADDA = 0  # 目的地信息
 
 def recv_timeout():
-    try:
-        data, ADDR = udpCliendSocket.recvfrom(BUFSIZ)
-    except timeout:
-        print("recv timeout")
-        return
-    if not data:
-        return
-    if len(data) != 14:  # 如果不是时间戳数据包，直接跳过本次循环
-        return
-    global time_start, time_end, count
-    if not time_start:
-        time_start = data
-    time_end = data
-    count += 1
+    pass  #为了配合函数调用变量需要设置的无用函数
+
+print("正在ping", HOST, "端口号", PORT)
 
 for i in range(10):
     i = str(i)
-    data = bytes(i, encoding="UTF-8")
+    data = bytes(i, encoding="UTF-8")  # 随机发送一个信息，就发送计数器吧
     ADDR = (HOST, PORT)  # 在每次循环中更新ADDR的值
-    udpCliendSocket.sendto(data, ADDR)
-
+    udpCliendSocket.sendto(data, ADDR)  # 调用发送接口
     udpCliendSocket.settimeout(1)  # 设置超时时间为1秒
     timer = threading.Timer(1.1, recv_timeout)  # 创建定时器线程，超时时间为1秒
     timer.start()  # 启动定时器线程
     data, ADDR = None, None
-    try:
-        data, ADDR = udpCliendSocket.recvfrom(BUFSIZ)
-        if not time_start:
+    try:  # 捕捉错误
+        data, ADDR = udpCliendSocket.recvfrom(BUFSIZ)  # 等待接受服务器回应
+        if not time_start:  # 如果当前的是第一个包
             time_start = data
         time_end = data
-        count += 1
+        count += 1  # 计数器加一
+        print("连接成功...")
         continue
     except timeout:
-        print("recv timeout")
-        timer.cancel()  # 取消定时器线程
+        print("请求超时。")  # 超时输出
         continue  # 超时后使用continue跳过本轮循环
     finally:
         udpCliendSocket.settimeout(None)  # 恢复默认的超时时间
@@ -59,22 +47,25 @@ for i in range(10):
 
 # 将时间戳bytes字符串转换为字符串，并使用切片操作获取时间戳部分
 if time_start:
-    time_start = int(time_start.hex(), 16)  # 将 bytes 对象转换为整数
-    time_end = int(time_end.hex(), 16)
-    time_start = str(time_start)[1:14]  # 将整数转换为字符串，并使用切片操作获取时间戳部分
-    time_end = str(time_end)[1:14]
+    # 将时间戳bytes字符串转换为字符串，并使用切片操作获取时间戳部分
+    time_start = time_start.decode('utf-8')[1:14]
+    time_end = time_end.decode('utf-8')[1:14]
 
-# 将时间戳字符串转换为datetime对象，计算时间差，并输出结果
-if time_start:
+    # 将时间戳字符串转换为datetime对象
     dt1 = datetime.fromtimestamp(int(time_start) / 1000)
     dt2 = datetime.fromtimestamp(int(time_end) / 1000)
-    print(dt1, dt2)
+
+    # 计算两个datetime对象之间的时间差
     delta = dt2 - dt1
 
     # 总共发送了十个数据包，count用于计数已经收到了的个数，输出丢失率
+    print("==================================")
     print(ADDR, "的统计信息：")
     print("\t 数据包：已发送 = 10, 已接收 =", count, ", 丢失 =", 10 - count, "(", 100 * (10 - count) / 10, "% 丢失)")
     print("往返行程的总时间：")
     print("\t",delta)
+else:
+    print("未收到任何时间戳数据包")
+    print("请检查连接（IP or  Port）是否正确")
     
 udpCliendSocket.close()
