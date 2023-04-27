@@ -1,6 +1,7 @@
 from socket import *
 from time import ctime
 import time
+import random
 
 HOST = ''
 PORT = 8080
@@ -17,8 +18,10 @@ while True: # 服务器无限循环
     timestamp_ms = int(time.time() * 1000 + time.time_ns() % 1000000 // 1000)
     # 构造新的时间戳字符串
     timestamp_str = bytes('[%d] %s' % (timestamp_ms, data), encoding='utf-8')
-    
-    udpSerrverSocket.sendto(timestamp_str, addr) # 反馈给客户端同样的时间�
+    # 一个调用random的随机函数，30%的概率重启循环
+    if random.randint(0,9) < 3:
+        continue
+    udpSerrverSocket.sendto(timestamp_str, addr) # 反馈给客户端同样的时间
     print( '连接地址:', addr)
     
 udpSerrverSocket.close() # 关闭服务器连接

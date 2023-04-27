@@ -2,7 +2,7 @@ from socket import *
 from datetime import datetime
 import threading 
 
-HOST = '172.28.53.135'  # 服务器连接地址
+HOST = '172.28.7.231'  # 服务器连接地址
 PORT = 8080  # 服务器启用端口
 BUFSIZ = 1024  # 缓冲区大小
 ADDR = (HOST, PORT)
@@ -16,7 +16,14 @@ time_end = 0
 ADDA = 0
 
 def recv_timeout():
-    raise TimeoutError("recv timeout")
+    data, ADDR = udpCliendSocket.recvfrom(BUFSIZ)
+    if not data:
+        return
+    global time_start, time_end, count
+    if time_start == 0:
+        time_start = data
+    time_end = data
+    count += 1
 
 for i in range(10):
     i = str(i)
@@ -28,13 +35,12 @@ for i in range(10):
     data, ADDR = None, None
     try:
         data, ADDR = udpCliendSocket.recvfrom(BUFSIZ)
-        print("successfully!")
     except TimeoutError:
         print("recv timeout")
         timer.cancel()  # 取消定时器线程
         continue  # 超时后使用continue跳过本轮循环
-
-    timer.cancel()  # 取消定时器线程
+    finally:
+        timer.cancel()  # 取消定时器线程
 
     if not data:
         continue
