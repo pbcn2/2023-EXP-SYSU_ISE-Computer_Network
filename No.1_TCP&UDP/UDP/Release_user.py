@@ -1,8 +1,9 @@
 from socket import *
 from datetime import datetime
 import threading 
+import time
 
-HOST = '172.28.7.231'  # 服务器连接地址
+HOST = '172.28.53.135'  # 服务器连接地址
 PORT = 8080  # 服务器启用端口
 BUFSIZ = 1024  # 缓冲区大小
 ADDR = (HOST, PORT)
@@ -18,13 +19,31 @@ ADDA = 0  # 目的地信息
 def recv_timeout():
     pass  #为了配合函数调用变量需要设置的无用函数
 
+def delta(time_start, time_end):
+    # 将时间戳bytes字符串转换为字符串，并使用切片操作获取时间戳部分
+    time_start = time_start.decode('utf-8')[1:14]
+    time_end = time_end.decode('utf-8')[1:14]
+
+    # 将时间戳字符串转换为datetime对象
+    dt1 = datetime.fromtimestamp(int(time_start) / 1000)
+    dt2 = datetime.fromtimestamp(int(time_end) / 1000)
+    print(dt1, dt2)
+
+    # 计算两个datetime对象之间的时间差
+    delta = dt2 - dt1
+    return delta
+
 print("正在ping", HOST, "端口号", PORT)
 
 for i in range(10):
-    i = str(i)
-    data = bytes(i, encoding="UTF-8")  # 随机发送一个信息，就发送计数器吧
+    data = '1'
+    send_time = int(time.time() * 1000 + time.time_ns() % 1000000 // 1000)
+    # 构造新的时间戳字符串
+    send_time_str = bytes('[%d] %s' % (send_time, data), encoding='utf-8')
+    # data = bytes(send_time_str, encoding="UTF-8")  # 发送时间戳信息
+
     ADDR = (HOST, PORT)  # 在每次循环中更新ADDR的值
-    udpCliendSocket.sendto(data, ADDR)  # 调用发送接口
+    udpCliendSocket.sendto(send_time_str, ADDR)  # 调用发送接口
     udpCliendSocket.settimeout(1)  # 设置超时时间为1秒
     timer = threading.Timer(1.1, recv_timeout)  # 创建定时器线程，超时时间为1秒
     timer.start()  # 启动定时器线程
@@ -35,7 +54,8 @@ for i in range(10):
             time_start = data
         time_end = data
         count += 1  # 计数器加一
-        print("连接成功...")
+        print(send_time_str,time_end)
+        print("连接成功...", delta(send_time_str, time_end))
         continue
     except timeout:
         print("请求超时。")  # 超时输出
