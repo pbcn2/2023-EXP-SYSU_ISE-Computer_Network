@@ -35,12 +35,12 @@ arp -d  删除所有的ip地址项
 ***step1:*** 
 终端中输入`ipconfig`得发送端ip地址如下
 
-![ipconfig](/img/ipconfig%20(2).png "Magic Gardens")
+![ipconfig](./img/ipconfig%20(2).png "Magic Gardens")
 检查发送端的mac地址如下
-![ipconfig](/img/getmac.png "Magic Gardens")
+![ipconfig](./img/getmac.png "Magic Gardens")
 在安卓终端中检查IP地址与MAC地址如下：
 ***要注意关闭随机MAC功能***
-![ipconfi](/img/android_ip.jpg "")
+![ipconfi](./img/android_ip.jpg "")
 
 以发送端主机MAC地址`ec:63:d7:ef:d0:ad`为例
 ```
@@ -58,7 +58,7 @@ MAC 地址中的 G/L 位（第八位）指示了地址的全局/本地性。如�
 ***step2:*** 
 在 Wireshark 显示捕捉器中中输入`icmp`，捕捉往返于目标服务器的ping数据包
 
-![ping_ws](/img/ping_ws.png)
+![ping_ws](./img/ping_ws.png)
 
 ***step3:*** 
 启动终端，输入`ping 172.28.41.25`即可在Wireshark界面中看到icmp报文，双击打开，展开以太网Ⅱ
@@ -93,7 +93,7 @@ ping 192.168.212.146
 ```
 
 然后在显示过滤器中输入`arp`捕捉ARP报文
-![arp_ws](/img/arp_ws.png)
+![arp_ws](./img/arp_ws.png)
 
 <font color=yellow>***请求报文***<br></font>
 
@@ -102,7 +102,7 @@ ping 192.168.212.146
     Who has a.b.c.d? Tell a'.b'.c'.d'
 ```
 &emsp;&emsp;展开可以看到以太网Ⅱ端口的MAC地址栏为`ff:ff:ff:ff:ff:ff`表示不清楚目的端口，询问
-![arp_request](/img/arp_request.png)
+![arp_request](./img/arp_request.png)
 <br>
 
 <font color=yellow>***回传报文***</font><br>
@@ -112,7 +112,7 @@ ping 192.168.212.146
 a.b.c.d is at xxx:xxx(MAC)
 ```
 展开以太网Ⅱ发现MAC位置已经用MAC地址替代了fff
-![arp_response](/img/arp_response.png)
+![arp_response](./img/arp_response.png)
 
 ### <font color=red>Bug Analysis：</font>
 #### 1. 获取目标MAC地址出错
