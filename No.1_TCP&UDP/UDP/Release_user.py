@@ -7,6 +7,7 @@ HOST = '172.28.63.133'  # 服务器连接地址
 PORT = 8080  # 服务器启用端口
 BUFSIZ = 1024  # 缓冲区大小
 ADDR = (HOST, PORT)
+RTT_list = []
 
 udpCliendSocket = socket(AF_INET, SOCK_DGRAM)
 
@@ -37,8 +38,8 @@ for i in range(10):
     ADDR = (HOST, PORT)  # 在每次循环中更新ADDR的值
     udpCliendSocket.sendto(data, ADDR)  # 调用发送接口
     udpCliendSocket.settimeout(1)  # 设置超时时间为1秒
-    timer = threading.Timer(1.1, recv_timeout)  # 创建定时器线程，超时时间为1秒
-    timer.start()  # 启动定时器线程
+    # timer = threading.Timer(1.1, recv_timeout)  # 创建定时器线程，超时时间为1秒
+    # timer.start()  # 启动定时器线程
     data, ADDR = None, None
     try:  # 捕捉错误
         data, ADDR = udpCliendSocket.recvfrom(BUFSIZ)  # 等待接受服务器回应
@@ -49,12 +50,13 @@ for i in range(10):
         # 创建接受时间时间戳
         recv_timestamp = int(time.time() * 1000 + time.time_ns() // 1000000 % 1000 + time.time_ns() % 1000000 / 1000000)
         print("连接成功...", "RTT =", timestamp_diff_ms(send_timestamp, recv_timestamp), "ms")
+        RTT_list.append(timestamp_diff_ms(send_timestamp, recv_timestamp))
     except timeout:
         print("请求超时。")  # 超时输出
         continue  # 超时后使用continue跳过本轮循环
     finally:
         udpCliendSocket.settimeout(None)  # 恢复默认的超时时间
-        timer.cancel()  # 取消定时器线程
+        # timer.cancel()  # 取消定时器线程
 
 
 # 将服务器时间戳bytes字符串转换为字符串，并使用切片操作获取时间戳部分
@@ -74,6 +76,12 @@ if time_start:
     print("==================================")
     print(ADDR, "的统计信息：")
     print("\t 数据包：已发送 = 10, 已接收 =", count, ", 丢失 =", 10 - count, "(", 100 * (10 - count) / 10, "% 丢失)")
+    # Max RTT in RTT_list
+    print("\t 最大RTT：", max(RTT_list), "ms")
+    # Min RTT in RTT_list
+    print("\t 最小RTT：", min(RTT_list), "ms")
+    # Average RTT in RTT_list
+    print("\t 平均值：", sum(RTT_list) / len(RTT_list), "ms")
     print("往返行程的总时间：")
     print("\t",delta)
 else:
