@@ -53,8 +53,6 @@ MAC 地址中的 G/L 位（第八位）指示了地址的全局/本地性。如�
 在这个 MAC 地址中，I/G 位是0，表示这是一个单播地址，而 G/L 位是0，表示这是一个全局地址。
 ```
 
-<br>
-
 ***step2:*** 
 在 Wireshark 显示捕捉器中中输入`icmp`，捕捉往返于目标服务器的ping数据包
 
@@ -95,7 +93,7 @@ ping 192.168.212.146
 然后在显示过滤器中输入`arp`捕捉ARP报文
 ![arp_ws](./img/arp_ws.png)
 
-<font color=yellow>***请求报文***<br></font>
+<font color=purple>***请求报文***</font>
 
 可以观察到一个Broadcast类型报文 INFO栏内容为 
 ```
@@ -103,9 +101,8 @@ ping 192.168.212.146
 ```
 &emsp;&emsp;展开可以看到以太网Ⅱ端口的MAC地址栏为`ff:ff:ff:ff:ff:ff`表示不清楚目的端口，询问
 ![arp_request](./img/arp_request.png)
-<br>
 
-<font color=yellow>***回传报文***</font><br>
+<font color=purple>***回传报文***</font>
 
 随后目标主机收到了广播，自己发送回传报文，Info为
 ``` 
@@ -130,13 +127,11 @@ ARP 项删除失败: 请求的操作需要提升。
 研究发现是当前终端的权限不够，以管理员身份重启终端以后就正常了
 <br>
 
-### <font color=skyblue> **思考题：** </font>
+### <font color=blue> **思考题：** </font>
 #### 1. 使用了显示过滤器后， Wireshark 的抓包工作量会减少吗？
 &emsp;&emsp;过滤器只是用于显示的目的，而不是真正的抓包过滤器。即使设置了过滤器，Wireshark 仍会抓取整个网络接口上的所有数据包，然后使用过滤器来决定哪些数据包应该被显示出来。因此，如果网络非常繁忙，过滤器不会减少抓包的工作量，但可以减少分析数据包的时间和精力
 
-#### 2. MAC 帧的长度和 IP 数据报的长度有怎样的关系？
-
-#### 3. 假设本机 IP 地址是 192.168.0.38，在本机上运行 Wireshark 捕获报文，使用`ip.addr == 192.168.0.38`作为过滤条件，能否过滤出本机发出/收到的ARP报文？为什么？
+#### 2. 假设本机 IP 地址是 192.168.0.38，在本机上运行 Wireshark 捕获报文，使用`ip.addr == 192.168.0.38`作为过滤条件，能否过滤出本机发出/收到的ARP报文？为什么？
 &emsp;&emsp;使用过滤条件 ip.addr == 192.168.0.38 无法过滤出本机发出/收到的 ARP 报文，因为 ARP 协议不使用 IP 地址进行传输，而是使用数据链路层的 MAC 地址。
 当主机需要了解某个 IP 地址对应的 MAC 地址时，它会发送一个 ARP 请求，请求对应 IP 地址的主机回复它的 MAC 地址。ARP 请求和回复报文是在数据链路层中直接发送和接收的，并不需要 IP 地址的参与。
 
@@ -147,15 +142,15 @@ arp
 arp and ether src host <本机MAC地址> 
     这将过滤本机发送或接收的 ARP 报文，其中 <本机MAC地址> 是你的本机 MAC 地址，可以在 Wireshark 中找到。
 ```
-#### 4. ping 同一局域网内的主机和局域网外的主机，都会产生 ARP 报文么？所产生的 ARP 报文有何不同，为什么？
+#### 3. ping 同一局域网内的主机和局域网外的主机，都会产生 ARP 报文么？所产生的 ARP 报文有何不同，为什么？
 
 &emsp;&emsp;在 ping 同一局域网内的主机时，会产生 ARP 报文。因为在同一局域网中，主机之间的通信是通过数据链路层的 MAC 地址实现的，而 ARP 协议用于将 IP 地址转换为 MAC 地址。因此，当一个主机向另一个主机发送 ICMP 请求（ping）时，它需要先通过 ARP 协议查询目标主机的 MAC 地址，才能向目标主机发送数据包。
 
 &emsp;&emsp;当 ping 局域网外的主机时，会产生不同的 ARP 报文。这是因为在跨越不同网络的情况下，通信需要经过路由器进行转发，而路由器连接了不同的网络，需要知道目标主机的 MAC 地址才能将数据包正确地发送到目标主机。因此，当一个主机向另一个网络中的主机发送 ICMP 请求时，它需要通过 ARP 协议查询路由器的 MAC 地址，并将数据包发送到路由器，由路由器转发到目标主机。
 
-&emsp;&emsp;因此，ping 同一局域网内的主机和局域网外的主机都会产生 ARP 报文，但产生的 ARP 报文不同。<font color=yellow>在同一局域网中，ARP 报文用于查询目标主机的 MAC 地址；而在跨越不同网络时，ARP 报文用于查询路由器的 MAC 地址。</font>
+&emsp;&emsp;因此，ping 同一局域网内的主机和局域网外的主机都会产生 ARP 报文，但产生的 ARP 报文不同。<font color=purple>在同一局域网中，ARP 报文用于查询目标主机的 MAC 地址；而在跨越不同网络时，ARP 报文用于查询路由器的 MAC 地址。</font>
 
-#### 5. ARP 请求数据包是支撑 TCP/IP 协议正常运作的广播包。如果滥发或错发 ARP 广播包会产生那些不良影响？如何发现和应对？
+#### 4. ARP 请求数据包是支撑 TCP/IP 协议正常运作的广播包。如果滥发或错发 ARP 广播包会产生那些不良影响？如何发现和应对？
 
 滥发或错发 ARP 广播包可能会对网络造成以下不良影响：
 
@@ -170,7 +165,8 @@ arp and ether src host <本机MAC地址>
 - 通过限制网络上允许使用 ARP 广播包的设备数量或使用 ARP 防火墙等安全措施来限制 ARP 广播包的数量。
 - 对于错误的 ARP 广播包，可以使用网络管理工具或安全软件来自动封锁源主机或对其进行隔离，以避免它们对网络造成威胁。
 
-#### 6. 什么是免费 ARP（ Gratuitous ARP）？它的作用是什么？请使用 Wireshark 进行捕捉和分析。
+#### 5. 什么是免费 ARP（ Gratuitous ARP）？它的作用是什么？请使用 Wireshark 进行捕
+捉和分析。  
 
 &emsp;&emsp;免费 ARP（Gratuitous ARP）是一种特殊类型的 ARP 报文，用于主机主动通知本网络上的其他主机，它的 IP 地址与 MAC 地址的映射关系已经发生了变化。
 
@@ -180,4 +176,9 @@ arp and ether src host <本机MAC地址>
 
 - 解决 IP 地址冲突：当两个主机在同一网络上使用了相同的 IP 地址时，它们可能会发送 ARP 请求，查询相同 IP 地址的 MAC 地址，这可能导致通信故障。在这种情况下，一个主机可以使用免费 ARP 报文，告知网络上的其他主机，它将会使用该 IP 地址，并通知其他主机停止使用该 IP 地址。
 
-## 实验1.2 IP与ICMP分析
+捕捉结果如下
+
+![free_arp](E:\OneDrive - mail2.sysu.edu.cn\Project\SYSU_Computer_Network_exp\No.2_Wireshark.ARP&IP.ICMP\img\free_arp.png)
+
+![free_arp_2](E:\OneDrive - mail2.sysu.edu.cn\Project\SYSU_Computer_Network_exp\No.2_Wireshark.ARP&IP.ICMP\img\free_arp_2.png)
+
